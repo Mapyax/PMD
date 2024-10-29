@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.pmu.ui.data.NewsData
+import com.example.pmu.data.NewsData
 import com.example.pmu.openGL_ES.OpenGLRenderer
 
 import com.example.pmu.viewmodel.NewsController

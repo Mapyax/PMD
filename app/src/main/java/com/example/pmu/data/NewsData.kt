@@ -1,4 +1,4 @@
-package com.example.pmu.ui.data
+package com.example.pmu.data
 
 data class NewsData(
     val id: Long,
