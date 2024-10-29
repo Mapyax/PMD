@@ -1,5 +1,7 @@
 package com.example.pmu.jetpackcompose
 
+import android.content.Context
+import android.opengl.GLSurfaceView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -22,47 +25,90 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.pmu.data.NewsData
+import com.example.pmu.openGL_ES.OpenGLRenderer
+
 import com.example.pmu.viewmodel.NewsController
 
 class JetPackComposeController {
 
     @Composable
+    fun OpenGLView(context: Context) {
+        AndroidView(factory = {
+            GLSurfaceView(context).apply {
+                setEGLContextClientVersion(2)
+                //OpenGLSurfaceView(context)
+                setRenderer(OpenGLRenderer(context))
+                // Включите рендеринг
+                renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+            }
+        })
+    }
+
+    @Composable
     fun NewsScreen(newsViewModel: NewsController) {
         val newsItems by newsViewModel.newsItems.collectAsState()
+        var showOpenGLView by remember { mutableStateOf(false) }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                NewsCard(newsItems[0], Color.Yellow, Modifier.weight(1f), newsViewModel)
-                NewsCard(newsItems[1], Color.Red, Modifier.weight(1f), newsViewModel)
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (showOpenGLView) {
+                // Показ OpenGL View
+                OpenGLView(context = LocalContext.current)
+            } else {
+                // Показ новостей
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.95f)
+                        .padding(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        NewsCard(newsItems[0], Color.Yellow, Modifier.weight(1f), newsViewModel)
+                        NewsCard(newsItems[1], Color.Red, Modifier.weight(1f), newsViewModel)
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        NewsCard(newsItems[2], Color.Cyan, Modifier.weight(1f), newsViewModel)
+                        NewsCard(newsItems[3], Color.LightGray, Modifier.weight(1f), newsViewModel)
+                    }
+                }
             }
 
-            Row(
+            // Кнопка внизу для переключения между OpenGL и новостями
+            Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .align(Alignment.BottomCenter)
+                    .padding(10.dp),
+                onClick = {
+                    showOpenGLView = !showOpenGLView  // Переключение между экранами
+                }
             ) {
-                NewsCard(newsItems[2], Color.Cyan, Modifier.weight(1f), newsViewModel)
-                NewsCard(newsItems[3], Color.LightGray, Modifier.weight(1f), newsViewModel)
+                Text(text = if (showOpenGLView) "Вернуться к новостям" else "Показать OpenGL")
             }
         }
     }
+
+
     @Composable
     fun NewsCard(
         newsItem: NewsData,
