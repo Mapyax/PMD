@@ -9,7 +9,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 
-class TexturedSquare(private val context: Context) {
+
+class Square(private val context: Context) {
     private lateinit var shaderProgram: ShaderProgram
     private var textureId: Int = 0
     private lateinit var vertexBuffer: FloatBuffer
@@ -36,34 +37,27 @@ class TexturedSquare(private val context: Context) {
     fun draw(mvpMatrix: FloatArray) {
         shaderProgram.use()
 
-        // Get handle to vertex shader's variables
         val positionHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "a_Position")
         val texCoordHandle = GLES20.glGetAttribLocation(shaderProgram.programId, "a_TexCoordinate")
         val mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgram.programId, "u_MVPMatrix")
 
-        // Pass the projection and view transformation to the shader
         GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0)
 
-        // Enable a handle to the vertices
         GLES20.glEnableVertexAttribArray(positionHandle)
         GLES20.glEnableVertexAttribArray(texCoordHandle)
 
-        // Prepare the vertex data
-        val stride = 5 * 4 // 5 elements per vertex, 4 bytes per float
+        val stride = 5 * 4
         vertexBuffer.position(0)
         GLES20.glVertexAttribPointer(positionHandle, 3, GLES20.GL_FLOAT, false, stride, vertexBuffer)
         vertexBuffer.position(3)
         GLES20.glVertexAttribPointer(texCoordHandle, 2, GLES20.GL_FLOAT, false, stride, vertexBuffer)
 
-        // Bind the texture
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId)
         GLES20.glUniform1i(GLES20.glGetUniformLocation(shaderProgram.programId, "u_Texture"), 0)
 
-        // Draw the square
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
 
-        // Disable vertex array
         GLES20.glDisableVertexAttribArray(positionHandle)
         GLES20.glDisableVertexAttribArray(texCoordHandle)
     }
@@ -77,16 +71,13 @@ class TexturedSquare(private val context: Context) {
         }
 
         val options = BitmapFactory.Options()
-        options.inScaled = false // No pre-scaling
+        options.inScaled = false
 
-        // Read in the resource
         val bitmap = BitmapFactory.decodeResource(context.resources, resourceId, options)
             ?: throw RuntimeException("Error loading texture.")
 
-        // Bind to the texture in OpenGL
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[0])
 
-        // Set filtering
         GLES20.glTexParameteri(
             GLES20.GL_TEXTURE_2D,
             GLES20.GL_TEXTURE_MIN_FILTER,
@@ -98,13 +89,10 @@ class TexturedSquare(private val context: Context) {
             GLES20.GL_LINEAR
         )
 
-        // Load the bitmap into the bound texture
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
 
-        // Generate MipMap
         GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D)
 
-        // Recycle the bitmap, since its data has been loaded into OpenGL
         bitmap.recycle()
 
         return textureIds[0]
