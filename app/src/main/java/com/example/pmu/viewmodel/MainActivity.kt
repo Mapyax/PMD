@@ -1,9 +1,8 @@
-package com.example.pmu
+package com.example.pmu.viewmodel
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.pmu.viewmodel.NewsController
 import androidx.compose.material3.MaterialTheme
 import com.example.pmu.jetpackcompose.JetPackComposeController
 
