@@ -1,5 +1,4 @@
 package com.example.pmu.jetpackcompose
-
 import android.content.Context
 import android.opengl.GLSurfaceView
 import androidx.compose.foundation.background
@@ -37,24 +36,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.pmu.data.NewsData
-import com.example.pmu.openGL_ES.OpenGLRenderer
-
+import com.example.pmu.OpenGLViewController
 import com.example.pmu.viewmodel.NewsController
 
 class JetPackComposeController {
 
-    @Composable
-    fun OpenGLView(context: Context) {
-        AndroidView(factory = {
-            GLSurfaceView(context).apply {
-                setEGLContextClientVersion(2)
-                //OpenGLSurfaceView(context)
-                setRenderer(OpenGLRenderer(context))
-                // Включите рендеринг
-                renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-            }
-        })
-    }
+
+
+
+
 
     @Composable
     fun NewsScreen(newsViewModel: NewsController) {
@@ -64,7 +54,7 @@ class JetPackComposeController {
         Box(modifier = Modifier.fillMaxSize()) {
             if (showOpenGLView) {
                 // Показ OpenGL View
-                OpenGLView(context = LocalContext.current)
+                OpenGLViewController().MainView()
             } else {
                 // Показ новостей
                 Column(
