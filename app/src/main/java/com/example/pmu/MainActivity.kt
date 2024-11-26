@@ -1,10 +1,11 @@
-package com.example.pmu.viewmodel
+package com.example.pmu
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import com.example.pmu.jetpackcompose.JetPackComposeController
+import com.example.pmu.viewmodel.NewsController
 
 class MainActivity : ComponentActivity() {
 
