@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pmu.openGL_ES.BlackholeRenderer
 import com.example.pmu.openGL_ES.GL
 import com.example.pmu.openGL_ES.MoonRenderer
 import com.example.pmu.openGL_ES.Planet
@@ -100,6 +101,11 @@ class OpenGLViewController {
                         currentScreen = Screen.OpenGL
                     })
                 }
+                Screen.BlackHole -> {
+                    BlackHoleInfoScreen(onBack = {
+                        currentScreen = Screen.OpenGL
+                    })
+                }
 
                 Screen.Advertisement -> TODO()
             }
@@ -109,7 +115,8 @@ class OpenGLViewController {
     @Composable
     fun OpenGLView(currentScreen: Screen, onScreenChange: (Screen) -> Unit) {
         val context = LocalContext.current
-        val renderer = remember { GL(context) }
+        val renderer = remember { BlackholeRenderer(context) }
+        // val renderer = remember { GL(context) }
 
         Box(modifier = Modifier.fillMaxSize()) {
             AndroidView(factory = {
@@ -121,53 +128,54 @@ class OpenGLViewController {
             }, modifier = Modifier.fillMaxSize())
 
             // Row moved to the top
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)  // Align to the top
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Button(
-                    onClick = {
-                        var temp = renderer.selectedPlanet - 1
-                        if (temp < 0) temp = renderer.planetsSize() - 1
-                        renderer.selectedPlanet = temp % renderer.planetsSize()
-                    },
-                    modifier = Modifier.weight(0.5f)
-                ) {
-                    Text("◀")
-                }
+            // Row(
+            //     modifier = Modifier
+            //         .align(Alignment.TopCenter)  // Align to the top
+            //         .fillMaxWidth()
+            //         .padding(16.dp)
+            // ) {
+            //     Button(
+            //         onClick = {
+            //             var temp = renderer.selectedPlanet - 1
+            //             if (temp < 0) temp = renderer.planetsSize() - 1
+            //             renderer.selectedPlanet = temp % renderer.planetsSize()
+            //         },
+            //         modifier = Modifier.weight(0.5f)
+            //     ) {
+            //         Text("◀")
+            //     }
 
-                Spacer(modifier = Modifier.width(8.dp))
+            //     Spacer(modifier = Modifier.width(8.dp))
 
-                Button(
-                    onClick = { when (renderer.selectedPlanet) {
-                        0 -> {onScreenChange(Screen.PlanetInfo0)}
-                        1 -> {onScreenChange(Screen.PlanetInfo1)}
-                        2 -> {onScreenChange(Screen.PlanetInfo2)}
-                        3 -> {onScreenChange(Screen.PlanetInfo3)}
-                        4 -> {onScreenChange(Screen.Moon)}
-                        5 -> {onScreenChange(Screen.PlanetInfo4)}
-                        6 -> {onScreenChange(Screen.PlanetInfo5)}
-                        7 -> {onScreenChange(Screen.PlanetInfo6)}
-                        8 -> {onScreenChange(Screen.PlanetInfo7)}
-                        9 -> {onScreenChange(Screen.PlanetInfo8)}
-                        else -> {}
-                    }},
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Информация")
-                }
+            //     Button(
+            //         onClick = { when (renderer.selectedPlanet) {
+            //             0 -> {onScreenChange(Screen.PlanetInfo0)}
+            //             1 -> {onScreenChange(Screen.PlanetInfo1)}
+            //             2 -> {onScreenChange(Screen.PlanetInfo2)}
+            //             3 -> {onScreenChange(Screen.PlanetInfo3)}
+            //             4 -> {onScreenChange(Screen.Moon)}
+            //             5 -> {onScreenChange(Screen.PlanetInfo4)}
+            //             6 -> {onScreenChange(Screen.PlanetInfo5)}
+            //             7 -> {onScreenChange(Screen.PlanetInfo6)}
+            //             8 -> {onScreenChange(Screen.PlanetInfo7)}
+            //             9 -> {onScreenChange(Screen.PlanetInfo8)}
+            //             10 -> {onScreenChange(Screen.BlackHole)}
+            //             else -> {}
+            //         }},
+            //         modifier = Modifier.weight(1f)
+            //     ) {
+            //         Text("Информация")
+            //     }
 
-                Spacer(modifier = Modifier.width(8.dp))
+            //     Spacer(modifier = Modifier.width(8.dp))
 
-                Button(
-                    onClick = { renderer.selectedPlanet = (renderer.selectedPlanet + 1) % renderer.planetsSize() },
-                    modifier = Modifier.weight(0.5f)
-                ) {
-                    Text("▶")
-                }
-            }
+            //     Button(
+            //         onClick = { renderer.selectedPlanet = (renderer.selectedPlanet + 1) % renderer.planetsSize() },
+            //         modifier = Modifier.weight(0.5f)
+            //     ) {
+            //         Text("▶")
+            //     }
+            // }
         }
     }
 
@@ -291,6 +299,74 @@ class OpenGLViewController {
         }
     }
 
+
+    @Composable
+    fun BlackHoleInfoScreen(onBack: () -> Unit) {
+        val context = LocalContext.current
+        val neptuneRenderer = remember { BlackholeRenderer(context) } // Обновите на ваш рендерер для Нептуна
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            AndroidView(factory = {
+                GLSurfaceView(context).apply {
+                    setEGLContextClientVersion(2)
+                    setRenderer(neptuneRenderer) // Используйте рендерер для Нептуна
+                    renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+                }
+            }, modifier = Modifier.fillMaxSize())
+
+            Button(
+                onClick = { onBack() },
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(16.dp)
+            ) {
+                Text("Назад")
+            }
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(16.dp)
+                    .background(Color(0x80000000)) // Полупрозрачный фон для лучшей читабельности
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Информация о Нептуне",
+                    style = TextStyle(
+                        fontSize = 20.sp, // Размер шрифта
+                        fontWeight = FontWeight.Bold, // Полужирный шрифт
+                        color = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Нептун — восьмая планета от Солнца и последняя в Солнечной системе.",
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Она находится на среднем расстоянии около 4,5 миллиардов километров от Солнца.",
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Нептун — газовый гигант, его атмосфера состоит в основном из водорода, гелия и метана.",
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Температура в атмосфере Нептуна достигает -214 °C.",
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Нептун имеет 14 известных спутников, самым большим из которых является Тритон.",
+                    color = Color.White
+                )
+            }
+        }
+    }
+
     @Composable
     fun PlanetInfoScreen(planet: Planet, onBack: () -> Unit) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -351,5 +427,6 @@ class OpenGLViewController {
         PlanetInfo6,
         PlanetInfo7,
         PlanetInfo8,
+        BlackHole
     }
 }

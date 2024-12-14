@@ -18,6 +18,8 @@ import kotlin.math.sin
 class GL(private val context: Context) : GLSurfaceView.Renderer {
     private lateinit var square: Square
     private lateinit var cube: Cube
+    private lateinit var cube2: Cube
+    private lateinit var blackHoleRenderer: BlackholeRenderer
     private lateinit var blackHole: Sphere
     private var blackHoleTexture: Int = 0
     private var blackHolePositionX = 5f // Начальная позиция X (в правом верхнем углу)
@@ -88,7 +90,7 @@ class GL(private val context: Context) : GLSurfaceView.Renderer {
 
         planets.forEach { it.initialize() }
 
-        planetTextures = IntArray(10)
+        planetTextures = IntArray(11)
         planetTextures[0] = loadTexture(context, R.drawable.sun)
         planetTextures[1] = loadTexture(context, R.drawable.mercury)
         planetTextures[2] = loadTexture(context, R.drawable.venus)
@@ -99,7 +101,8 @@ class GL(private val context: Context) : GLSurfaceView.Renderer {
         planetTextures[7] = loadTexture(context, R.drawable.saturn)
         planetTextures[8] = loadTexture(context, R.drawable.uranus)
         planetTextures[9] = loadTexture(context, R.drawable.neptune)
-        blackHoleTexture = loadTexture(context, R.drawable.blackhole)
+        planetTextures[10] = loadTexture(context, R.drawable.blackhole)
+        // blackHoleTexture = loadTexture(context, R.drawable.blackhole)
 
 
         square = Square(context)
@@ -107,9 +110,13 @@ class GL(private val context: Context) : GLSurfaceView.Renderer {
 
         cube = Cube()
         cube.initialize()
+        cube2 = Cube()
+        cube2.initialize()
 
         blackHole = Sphere(radius = 0.5f)
         blackHole.initialize()
+
+        blackHoleRenderer = BlackholeRenderer(context)
 
         lineProgram = loadLineShaderProgram()
     }
@@ -229,7 +236,10 @@ class GL(private val context: Context) : GLSurfaceView.Renderer {
             Matrix.multiplyMM(mVPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
             Matrix.multiplyMM(mVPMatrix, 0, mVPMatrix, 0, modelMatrix, 0)
 
-            blackHole.draw(mVPMatrix, loadTexture(context, R.drawable.blackhole)) // Рисуем черную дыру с текстурой
+            // blackHoleRenderer.mvpMatrix = mVPMatrix
+            // blackHoleRenderer.onSurfaceCreated()
+            blackHole.draw(mVPMatrix, planetTextures[10]) // Рисуем черную дыру с текстурой
+            cube2.draw(mVPMatrix)
         }
 
 
